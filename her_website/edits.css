@@ -1,0 +1,568 @@
+@media (max-width: 2000px) {
+    body {
+        background-color: #df8bf0;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: center;
+        min-height: 100vh;
+        margin: 0;
+        padding: 60px 20px; 
+        font-family: 'Courier New', monospace;
+        position: relative;
+        overflow-x: hidden;
+        overflow-y: auto;
+    }
+
+    /* --- Double Border Animation --- */
+    .border-top, .border-right, .border-bottom, .border-left {
+        position: fixed;
+        background-color: #8B0000;
+        z-index: 1000;
+    }
+
+    /* Outer borders */
+    .border-top {
+        top: 0;
+        left: 0;
+        width: 0;
+        height: 4px;
+        animation: expandWidth 1.5s ease-out forwards;
+    }
+
+    .border-right {
+        top: 0;
+        right: 0;
+        width: 4px;
+        height: 0;
+        animation: expandHeight 1.5s ease-out 1.5s forwards;
+    }
+
+    .border-bottom {
+        bottom: 0;
+        right: 0;
+        width: 0;
+        height: 4px;
+        animation: expandWidth 1.5s ease-out 3s forwards;
+    }
+
+    .border-left {
+        bottom: 0;
+        left: 0;
+        width: 4px;
+        height: 0;
+        animation: expandHeight 1.5s ease-out 4.5s forwards;
+    }
+
+    /* Inner borders (using ::after pseudo-elements) */
+    .border-top::after {
+        content: '';
+        position: absolute;
+        top: 8px;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background-color: #8B0000;
+    }
+
+    .border-right::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -8px;
+        width: 4px;
+        height: 100%;
+        background-color: #8B0000;
+    }
+
+    .border-bottom::after {
+        content: '';
+        position: absolute;
+        top: -8px;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background-color: #8B0000;
+    }
+
+    .border-left::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 8px;
+        width: 4px;
+        height: 100%;
+        background-color: #8B0000;
+    }
+
+    /* --- Corner Heart --- */
+    .corner-heart {
+        position: fixed;
+        top: 10px;
+        left: 10px;
+        z-index: 1001;
+        opacity: 0;
+        transform: scale(0);
+        animation: heartAppear 0.8s ease-out 6s forwards, heartBeat 1.5s infinite 6.8s;
+    }
+
+    .corner-heart svg {
+        fill: #8B0000;
+        filter: drop-shadow(0 0 8px rgba(139, 0, 0, 0.6));
+    }
+
+    .container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+        position: relative;
+        z-index: 1;
+    }
+
+    h1, h2, h3, h4, h5 {
+        color: #e725e7;
+        overflow: hidden;
+        text-align: center;
+        margin-bottom: 20px;
+        width: 0;
+        border-right: 3px solid transparent;
+        white-space: nowrap;
+    }
+
+    /* --- Animation Timing for Intro (1 second longer each) --- */
+    h1 { 
+        animation: typing 2s steps(20) 0s forwards, 
+                   blink 0.7s infinite, 
+                   delete 1.5s steps(20) 5s forwards, 
+                   switch 0s 6.5s forwards; 
+    }
+    
+    h2 { 
+        animation: typing 2s steps(20) 6.5s forwards, 
+                   blink 0.7s infinite 6.5s, 
+                   delete 1.5s steps(20) 13s forwards, 
+                   switch 0s 14.5s forwards; 
+    }
+    
+    h5 { 
+        animation: typing 2s steps(20) 9s forwards, 
+                   blink 0.7s infinite 9s, 
+                   delete 1.5s steps(20) 13s forwards, 
+                   switch 0s 14.5s forwards; 
+    }
+    
+    h3 { 
+        animation: typing 3s steps(30) 14.5s forwards, 
+                   blink 0.7s infinite 14.5s; 
+    }
+    
+    h4 { 
+        animation: typing 3s steps(30) 18s forwards, 
+                   blink 0.7s infinite 18s; 
+    }
+
+    /* --- The Heart Button --- */
+    .heart-button {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px 22px;
+        background-color: #e8e8e8;
+        border: 9px solid #ffe2e2;
+        border-radius: 35px;
+        opacity: 0;
+        transform: scale(0);
+        animation: fadeInButton 1s ease-out 21s forwards, beatingHeart 1.2s infinite 22s;
+        cursor: pointer;
+    }
+
+    .heart-button svg { fill: rgb(255, 110, 110); }
+
+    /* --- The Poem Container --- */
+    .poem {
+        display: none; /* Hidden until button click */
+    }
+
+    .poem .line {
+        color: #e725e7;
+        font-size: 1.2em;
+        text-align: center;
+        line-height: 1.8;
+        margin: 0;
+        padding: 0;
+        width: 0;
+        overflow: hidden;
+        border-right: 3px solid transparent;
+        white-space: nowrap;
+    }
+
+    /* --- Button Container --- */
+    .button-container {
+        display: none; /* Hidden initially */
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+        margin-top: 40px;
+        padding-bottom: 50vh; /* Creates space for infinite scroll trap */
+    }
+
+    /* Show buttons after poem finishes */
+    #trigger:checked ~ .container .poem .button-container {
+        display: flex;
+        animation: fadeInButtons 1s ease-out 29s forwards;
+    }
+
+    /* Spacer between YES and NO buttons */
+    .spacer {
+        height: 120vh; /* Creates the infinite scroll gap */
+        width: 100%;
+    }
+
+    /* --- THE SWAP (When Button is Tapped) --- */
+    #trigger:checked ~ .container h1,
+    #trigger:checked ~ .container h2,
+    #trigger:checked ~ .container h3,
+    #trigger:checked ~ .container h4,
+    #trigger:checked ~ .container h5,
+    #trigger:checked ~ .container .heart-button {
+        display: none !important;
+    }
+
+    #trigger:checked ~ .container .poem {
+        display: block;
+        width: 100%;
+    }
+
+    /* --- Line-by-Line Typing Animation --- */
+    #trigger:checked ~ .container .poem .line1 {
+        animation: typeLine 2s steps(50) 0.5s forwards, blinkLine 0.7s infinite 0.5s;
+    }
+    #trigger:checked ~ .container .poem .line2 {
+        animation: typeLine 2s steps(50) 2.5s forwards, blinkLine 0.7s infinite 2.5s;
+    }
+    #trigger:checked ~ .container .poem .line3 {
+        animation: typeLine 2.5s steps(60) 4.5s forwards, blinkLine 0.7s infinite 4.5s;
+    }
+    #trigger:checked ~ .container .poem .line4 {
+        animation: typeLine 3s steps(70) 7s forwards, blinkLine 0.7s infinite 7s;
+    }
+    #trigger:checked ~ .container .poem .line5 {
+        animation: typeLine 2.5s steps(60) 10s forwards, blinkLine 0.7s infinite 10s;
+    }
+    #trigger:checked ~ .container .poem .line6 {
+        animation: typeLine 2.5s steps(60) 12.5s forwards, blinkLine 0.7s infinite 12.5s;
+    }
+    #trigger:checked ~ .container .poem .line7 {
+        animation: typeLine 2.5s steps(60) 15s forwards, blinkLine 0.7s infinite 15s;
+    }
+    #trigger:checked ~ .container .poem .line8 {
+        animation: typeLine 2.5s steps(60) 17.5s forwards, blinkLine 0.7s infinite 17.5s;
+    }
+    #trigger:checked ~ .container .poem .line9 {
+        animation: typeLine 2.5s steps(60) 20s forwards, blinkLine 0.7s infinite 20s;
+    }
+    #trigger:checked ~ .container .poem .line10 {
+        animation: typeLine 2.5s steps(60) 22.5s forwards, blinkLine 0.7s infinite 22.5s;
+    }
+    #trigger:checked ~ .container .poem .line11 {
+        animation: typeLine 0.5s steps(5) 25s forwards;
+    }
+    #trigger:checked ~ .container .poem .line12 {
+        animation: typeLine 3s steps(70) 25.5s forwards, blinkLine 0.7s infinite 25.5s, 
+                   stopBlink 0s 28.5s forwards;
+    }
+}
+
+/* --- Border Expansion Keyframes --- */
+@keyframes expandWidth {
+    from { width: 0; }
+    to { width: 100%; }
+}
+
+@keyframes expandHeight {
+    from { height: 0; }
+    to { height: 100%; }
+}
+
+/* --- Heart Animations --- */
+@keyframes heartAppear {
+    to { 
+        opacity: 1; 
+        transform: scale(1); 
+    }
+}
+
+@keyframes heartBeat {
+    0%, 50%, 100% { transform: scale(1); }
+    25% { transform: scale(1.15); }
+}
+
+/* --- Shared Keyframes --- */
+@keyframes typing {
+    from { width: 0; border-right-color: #e725e7; }
+    to { width: 100%; border-right-color: #e725e7; }
+}
+
+@keyframes delete {
+    from { width: 100%; border-right-color: #e725e7; }
+    to { width: 0; border-right-color: #e725e7; }
+}
+
+@keyframes switch { 
+    to { display: none; height: 0; margin: 0; visibility: hidden; } 
+}
+
+@keyframes blink { 
+    50% { border-color: transparent; } 
+}
+
+@keyframes fadeInButton { 
+    to { opacity: 1; transform: scale(1); } 
+}
+
+@keyframes beatingHeart {
+    0%, 30%, 60% { transform: scale(1); }
+    15%, 45% { transform: scale(1.1); }
+}
+
+/* --- Line-by-Line Poem Animations --- */
+@keyframes typeLine {
+    from { width: 0; border-right-color: #e725e7; }
+    to { width: 100%; border-right-color: #e725e7; }
+}
+
+@keyframes blinkLine {
+    50% { border-right-color: transparent; }
+}
+
+/* From Uiverse.io by doniaskima */ 
+.btn-54,
+.btn-54 *,
+.btn-54 :after,
+.btn-54 :before,
+.btn-54:after,
+.btn-54:before {
+  border: 0 solid;
+  box-sizing: border-box;
+}
+
+.btn-54 {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-appearance: button;
+  background-color: #5f5757;
+  background-image: none;
+  color: #474447;
+  cursor: pointer;
+  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+    Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif,
+    Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
+  font-size: 150%;
+  line-height: 1.5;
+  margin: 0;
+  -webkit-mask-image: -webkit-radial-gradient(#5f5757, #474447);
+  padding: 0;
+  width: 90%;
+  max-width: 500px;
+  pointer-events: none; /* Makes NO button unclickable */
+  opacity: 0.7;
+}
+
+.btn-54:disabled {
+  cursor: default;
+}
+
+.btn-54:-moz-focusring {
+  outline: auto;
+}
+
+.btn-54 svg {
+  display: block;
+  vertical-align: middle;
+}
+
+.btn-54 [hidden] {
+  display: none;
+}
+
+.btn-54 {
+  border: 1px solid;
+  border-radius: 999px;
+  box-sizing: border-box;
+  display: block;
+  font-weight: 900;
+  overflow: hidden;
+  padding: 2rem 3rem;
+  position: relative;
+  text-transform: uppercase;
+}
+
+.btn-54 .original {
+  background: #5f5757;
+  color: #474447;
+  display: grid;
+  inset: 0;
+  place-content: center;
+  position: absolute;
+  transition: transform 0.2s cubic-bezier(0.87, 0, 0.13, 1);
+}
+
+.btn-54:hover .original {
+  transform: translateY(100%);
+}
+
+.btn-54 .letters {
+  display: inline-flex;
+}
+
+.btn-54 span {
+  opacity: 0;
+  transform: translateY(-15px);
+  transition: transform 0.2s cubic-bezier(0.87, 0, 0.13, 1), opacity 0.2s;
+}
+
+.btn-54 span:nth-child(2n) {
+  transform: translateY(15px);
+}
+
+.btn-54:hover span {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.btn-54:hover span:nth-child(2) {
+  transition-delay: 0.1s;
+}
+
+.btn-54:hover span:nth-child(3) {
+  transition-delay: 0.2s;
+}
+
+.btn-54:hover span:nth-child(4) {
+  transition-delay: 0.3s;
+}
+
+.btn-54:hover span:nth-child(5) {
+  transition-delay: 0.4s;
+}
+
+.btn-54:hover span:nth-child(6) {
+  transition-delay: 0.5s;
+}
+
+/* From Uiverse.io by doniaskima */ 
+.btn-53,
+.btn-53 *,
+.btn-53 :after,
+.btn-53 :before,
+.btn-53:after,
+.btn-53:before {
+  border: 0 solid;
+  box-sizing: border-box;
+}
+
+.btn-53 {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-appearance: button;
+  background-color: #a722ac;
+  background-image: none;
+  color: #a362a3;
+  cursor: pointer;
+  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+    Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif,
+    Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
+  font-size: 150%;
+  line-height: 1.5;
+  margin: 0;
+  -webkit-mask-image: -webkit-radial-gradient(#a722ac, #a362a3);
+  padding: 0;
+  width: 90%;
+  max-width: 500px;
+}
+
+.btn-53:disabled {
+  cursor: default;
+}
+
+.btn-53:-moz-focusring {
+  outline: auto;
+}
+
+.btn-53 svg {
+  display: block;
+  vertical-align: middle;
+}
+
+.btn-53 [hidden] {
+  display: none;
+}
+
+.btn-53 {
+  border: 1px solid;
+  border-radius: 999px;
+  box-sizing: border-box;
+  display: block;
+  font-weight: 900;
+  overflow: hidden;
+  padding: 2rem 3rem;
+  position: relative;
+  text-transform: uppercase;
+}
+
+.btn-53 .original {
+  background: #a722ac;
+  color: #a362a3;
+  display: grid;
+  inset: 0;
+  place-content: center;
+  position: absolute;
+  transition: transform 0.2s cubic-bezier(0.87, 0, 0.13, 1);
+}
+
+.btn-53:hover .original {
+  transform: translateY(100%);
+}
+
+.btn-53 .letters {
+  display: inline-flex;
+}
+
+.btn-53 span {
+  opacity: 0;
+  transform: translateY(-15px);
+  transition: transform 0.2s cubic-bezier(0.87, 0, 0.13, 1), opacity 0.2s;
+}
+
+.btn-53 span:nth-child(2n) {
+  transform: translateY(15px);
+}
+
+.btn-53:hover span {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.btn-53:hover span:nth-child(2) {
+  transition-delay: 0.1s;
+}
+
+.btn-53:hover span:nth-child(3) {
+  transition-delay: 0.2s;
+}
+
+.btn-53:hover span:nth-child(4) {
+  transition-delay: 0.3s;
+}
+
+.btn-53:hover span:nth-child(5) {
+  transition-delay: 0.4s;
+}
+
+.btn-53:hover span:nth-child(6) {
+  transition-delay: 0.5s;
+}
+
+@keyframes fadeInButtons {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
